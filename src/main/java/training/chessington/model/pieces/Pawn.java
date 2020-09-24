@@ -17,21 +17,53 @@ public class Pawn extends AbstractPiece {
     public List<Move> getAllowedMoves(Coordinates from, Board board) {
         List <Move> allowedMoves = new ArrayList<>();
 
-        boolean black = this.getColour().equals(PlayerColour.BLACK);
-        int moveBy = black ? 1 : -1;
-        Coordinates to = new Coordinates(from.getRow()+moveBy, from.getCol());
-        boolean squareExists = (to.getRow()>=0 && to.getCol() >= 0)&&(to.getRow()<=7 && to.getCol() <= 7);
-        boolean squareAvailable = squareExists ? (board.get(to)==null) : false;
-        if (squareExists && squareAvailable) allowedMoves.add(new Move(from,to));
+        boolean thisPieceIsBlack = this.getColour().equals(PlayerColour.BLACK);
+        int moveBy = thisPieceIsBlack ? 1 : -1;
+        Coordinates to = adjustSingleCoordinates(from,moveBy,0);
+        boolean squareAvailable = squareExists(to) ? (board.get(to)==null) : false;
+        if (squareAvailable) allowedMoves.add(new Move(from,to));
 
         //implement first (="double") move
-        boolean isFirstMove = ((black && from.getRow()==1)||(!black && from.getRow()==6))? true : false;
+        boolean isFirstMove = ((thisPieceIsBlack && from.getRow()==1)||(!thisPieceIsBlack && from.getRow()==6))? true : false;
         if (isFirstMove){
-            Coordinates to2 = new Coordinates(from.getRow()+moveBy*2, from.getCol());
+            Coordinates to2 = adjustSingleCoordinates(from,moveBy*2,0);
             squareAvailable = (board.get(to2)==null);
             if (squareAvailable && allowedMoves.size()>0) allowedMoves.add(new Move(from,to2));
         }
 
+        //sort enemy's pieces
+        Coordinates myPosition = from;
+        Coordinates enemy1PossibleCoordinates = thisPieceIsBlack ? adjustSingleCoordinates(from,1,1) : adjustSingleCoordinates(from,-1,1);
+        Coordinates enemy2PossibleCoordinates = thisPieceIsBlack ? adjustSingleCoordinates(from,1,-1) : adjustSingleCoordinates(from,-1,-1);
+
+        boolean enemyPiece1Exists = false;
+        if (squareExists(enemy1PossibleCoordinates)){
+            Piece enemyPiece = board.get(enemy1PossibleCoordinates);
+            if (enemyPiece!=null) {
+                if (enemyPiece.getColour()!=this.getColour()) enemyPiece1Exists = true;
+            }
+        }
+        boolean enemyPiece2Exists = false;
+        if (squareExists(enemy2PossibleCoordinates)){
+            Piece enemyPiece = board.get(enemy2PossibleCoordinates);
+            if (enemyPiece!=null) {
+                if (enemyPiece.getColour()!=this.getColour()) enemyPiece2Exists = true;
+            }
+        }
+
+        if (enemyPiece1Exists) allowedMoves.add(new Move(from,enemy1PossibleCoordinates));
+        if (enemyPiece2Exists) allowedMoves.add(new Move(from,enemy2PossibleCoordinates));
+
+
         return allowedMoves;
     }
+
+    private boolean squareExists (Coordinates c){
+        return (c.getRow()>=0 && c.getCol() >= 0)&&(c.getRow()<=7 && c.getCol() <= 7);
+    }
+    private Coordinates adjustSingleCoordinates (Coordinates c,int row, int col){
+        return new Coordinates(c.getRow()+row, c.getCol()+col);
+    }
+
+
 }
