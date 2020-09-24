@@ -24,6 +24,14 @@ public class Pawn extends AbstractPiece {
         //list
         List <Move> allowedMoves = new ArrayList<>();
         allowedMoves.add(allowedMove);
+
+
+        //implement first move
+        boolean firstMove = ((black && from.getRow()==1)||(!black && from.getRow()==6))? true : false;
+        if (firstMove){
+            allowedMoves.add(new Move(from, new Coordinates(from.getRow()+moveBy*2, from.getCol())));
+        }
+
         return allowedMoves;
     }
 }
