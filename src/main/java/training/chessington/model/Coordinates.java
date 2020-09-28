@@ -41,4 +41,18 @@ public final class Coordinates {
     public Coordinates plus(int rowDiff, int colDiff) {
         return new Coordinates(row + rowDiff, col + colDiff);
     }
+
+    public boolean existOnTheBoard(){
+        return (this.getRow()>=0 && this.getCol() >= 0)&&(this.getRow()<=7 && this.getCol() <= 7);
+    }
+
+    public Coordinates getNextSquareInDirection (String direction){
+        int extraCol = 0;
+        int extraRow = 0;
+        if (direction.contains("Up")) extraRow--;
+        if (direction.contains("Down")) extraRow++;
+        if (direction.contains("Right")) extraCol++;
+        if (direction.contains("Left")) extraCol--;
+        return new Coordinates(this.getRow()+extraRow,this.getCol()+extraCol);
+    }
 }

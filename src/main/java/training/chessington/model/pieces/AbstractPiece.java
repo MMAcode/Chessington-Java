@@ -1,5 +1,6 @@
 package training.chessington.model.pieces;
 
+import training.chessington.model.Coordinates;
 import training.chessington.model.PlayerColour;
 
 public abstract class AbstractPiece implements Piece {
@@ -25,5 +26,9 @@ public abstract class AbstractPiece implements Piece {
     @Override
     public String toString() {
         return colour.toString() + " " + type.toString();
+    }
+
+    public boolean isBlack(){
+        return this.getColour().equals(PlayerColour.BLACK);
     }
 }
